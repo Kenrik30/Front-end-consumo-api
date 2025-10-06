@@ -1,5 +1,71 @@
-﻿<h3>Create</h3>
+﻿@page "/herramienta/create"
+@using BlazorEjemploG06.Modelos.DTO.HerramientaDTO
+@inject HttpClient http
+@inject NavigationManager NavManager
+
+<h3>Registrar Herramienta</h3>
+
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="idNombre" @bind-value="herramientaGuardar.nombre" />
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <label class="form-label">Descripción</label>
+        <input type="text" class="form-control" id="idDescripcion" @bind-value="herramientaGuardar.descripcion" />
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <label class="form-label">Marca</label>
+        <input type="text" class="form-control" id="idMarca" @bind-value="herramientaGuardar.marca" />
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-sm-12">
+        <button class="btn btn-primary" @onclick="CrearHerramienta">Guardar</button>
+        <button class="btn btn-secondary" @onclick="VolverListado">Regresar</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <span style="color:red; font-weight:bold">@error</span>
+    </div>
+</div>
 
 @code {
+    HerramientaGuardar herramientaGuardar = new HerramientaGuardar();
+    string error = "";
 
+    public async Task CrearHerramienta()
+    {
+        try
+        {
+            var resultado = await http.PostAsJsonAsync("herramienta", herramientaGuardar);
+
+            if (resultado.IsSuccessStatusCode)
+            {
+                VolverListado();
+            }
+            else
+            {
+                error = "Error al registrar la herramienta.";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = $"Error: {ex.Message}";
+        }
+    }
+
+    void VolverListado()
+    {
+        NavManager.NavigateTo("/herramientas");
+    }
 }

@@ -1,5 +1,83 @@
-﻿<h3>Edit</h3>
+﻿@page "/herramienta/edit/{pId:int}"
+@using BlazorEjemploG06.Modelos.DTO.HerramientaDTO
+@inject HttpClient http
+@inject NavigationManager NavManager
+
+<h3>Modificar Herramienta</h3>
+
+<input type="hidden" id="idHerramienta" @bind-value="herramientaModificar.id" />
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="idNombre" @bind-value="herramientaModificar.nombre" />
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <label class="form-label">Descripción</label>
+        <input type="text" class="form-control" id="idDescripcion" @bind-value="herramientaModificar.descripcion" />
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <label class="form-label">Marca</label>
+        <input type="text" class="form-control" id="idMarca" @bind-value="herramientaModificar.marca" />
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-sm-12">
+        <button class="btn btn-primary" @onclick="ModificarHerramienta">Guardar</button>
+        <button class="btn btn-secondary" @onclick="VolverListado">Regresar</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <span style="color:red; font-weight:bold">@error</span>
+    </div>
+</div>
 
 @code {
+    HerramientaModificar herramientaModificar = new HerramientaModificar();
+    string error = "";
 
+    [Parameter]
+    public int pId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (pId != 0)
+        {
+            herramientaModificar = await http.GetFromJsonAsync<HerramientaModificar>($"herramienta/{pId}");
+        }
+        else
+        {
+            error = "La herramienta seleccionada no es válida.";
+        }
+    }
+
+    public async Task ModificarHerramienta()
+    {
+        try
+        {
+            var resultado = await http.PutAsJsonAsync($"herramienta/{pId}", herramientaModificar);
+
+            if (resultado.IsSuccessStatusCode)
+            {
+                VolverListado();
+            }
+            else
+            {
+                error = "Ocurrió un error al modificar la herramienta.";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = $"Error: {ex.Message}";
+        }
+    }
+
+    void VolverListado()
+    {
+        NavManager.NavigateTo("/herramientas");
+    }
 }

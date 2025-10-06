@@ -1,5 +1,90 @@
-﻿<h3>Index</h3>
+﻿@page "/herramientas/"
+@using BlazorEjemploG06.Modelos.DTO.HerramientaDTO
+@inject HttpClient http
+@inject NavigationManager NavManager
+
+<h3>Herramientas</h3>
+
+<button class="btn btn-primary" @onclick="newHerramienta">Nueva herramienta</button>
+
+<h4>Buscar</h4>
+<div class="row">
+    <div class="col-sm-12">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="idBusNombre" />
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="col-sm-12">
+        <button class="btn btn-primary">Buscar</button>
+    </div>
+</div>
+
+@if (herramientas == null)
+{
+    <p><em>Cargando herramientas...</em></p>
+}
+else
+{
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Marca</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var herramienta in herramientas)
+            {
+                <tr>
+                    <td>@herramienta.nombre</td>
+                    <td>@herramienta.descripcion</td>
+                    <td>@herramienta.marca</td>
+                    <td>
+                        <button class="btn btn-success me-1" @onclick="() => goModify(herramienta.id)">Modificar</button>
+                        <button class="btn btn-info me-1" @onclick="() => goDetail(herramienta.id)">Detalle</button>
+                        <button class="btn btn-danger" @onclick="() => goDelete(herramienta.id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
+    private List<HerramientaSalida>? herramientas;
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            herramientas = await http.GetFromJsonAsync<List<HerramientaSalida>>("herramienta/lista");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar herramientas: {ex.Message}");
+        }
+    }
+
+    void newHerramienta()
+    {
+        NavManager.NavigateTo("/herramienta/create");
+    }
+
+    void goModify(int id)
+    {
+        NavManager.NavigateTo($"/herramienta/edit/{id}");
+    }
+
+    void goDetail(int id)
+    {
+        NavManager.NavigateTo($"/herramienta/detail/{id}");
+    }
+
+    void goDelete(int id)
+    {
+        NavManager.NavigateTo($"/herramienta/delete/{id}");
+    }
 }
