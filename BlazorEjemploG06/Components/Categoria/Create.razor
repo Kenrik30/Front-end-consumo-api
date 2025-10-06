@@ -1,0 +1,57 @@
+﻿@page "/categoria/create"
+@using BlazorEjemploG06.Modelos.DTO.CategoriaDTO;
+@using System.Text.Json;
+@inject HttpClient http
+@inject NavigationManager NavManager
+
+<h3>Registrar</h3>
+
+<div class="row">
+    <div class="col-sm-12">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="idNombre" @bind-value="ctguardar.nombre" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <button class="btn btn-primary" @onclick="CreateRol">Guardar</button>
+        <button class="btn btn-secondary" @onclick="Index">Regresar</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <span style="color:red; font-weight:bold">@error</span>
+    </div>
+</div>
+
+@code {
+    CategoriaGuardar ctguardar = new CategoriaGuardar();
+
+    string error = "";
+
+    public async Task CreateRol()
+    {
+        try
+        {
+            var resultado = await http.PostAsJsonAsync<CategoriaGuardar>("categoria", ctguardar);
+
+            if (Convert.ToInt32(resultado.StatusCode) == 200)
+            {
+                Index();
+            }
+            else
+            {
+                error = "Error al ingresar la categoria";    
+            }
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;    
+        }
+    }
+
+    void Index()
+    {
+        NavManager.NavigateTo("/categoria/index");
+    }
+}

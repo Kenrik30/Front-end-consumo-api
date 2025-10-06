@@ -1,0 +1,81 @@
+﻿@page "/categoria/index"
+@using BlazorEjemploG06.Modelos.DTO.CategoriaDTO;
+@using System.Text.Json;
+@inject HttpClient http
+@inject NavigationManager NavManager
+
+<button id="idNuevo" class="btn btn-primary" >Nuevo Rol</button>
+<h3>Buscar</h3>
+<div class="row">
+    <div class="col-sm-12">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="idBusNombre" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <button class="btn btn-primary">Buscar</button>
+    </div>
+</div>
+@if (categorias == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var categoria in categorias)
+            {
+                <tr>
+                    <td>@categoria.nombre</td>
+                    <td><button class="btn btn-success" @onclick="(() => goModify(categoria.id))">Modificar</button></td>
+                    <td><button class="btn btn-info" @onclick="(() => goDetail(categoria.id))">Detalle</button></td>
+                    <td><button class="btn btn-danger" @onclick="(() => goDelete(categoria.id))">Eliminar</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private CategoriaSalida[]? categorias;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categorias = await http.GetFromJsonAsync<CategoriaSalida[]>("categoria/lista");
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);    
+        }
+    }
+
+    void newRol()
+    {
+        NavManager.NavigateTo("/categoria/create");
+    }
+
+    void goModify(int pId)
+    {
+        NavManager.NavigateTo("/categoria/edit/" + pId);
+    }
+
+    void goDetail(int pId)
+    {
+        NavManager.NavigateTo("/categoria/detail/" +pId);
+    }
+
+    void goDelete(int pId)
+    {
+        NavManager.NavigateTo("/categoria/delete/" + pId);
+    }
+}
