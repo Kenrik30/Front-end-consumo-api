@@ -47,7 +47,7 @@
     {
         if (pId != 0)
         {
-            herramientaModificar = await http.GetFromJsonAsync<HerramientaModificar>($"herramienta/{pId}");
+            herramientaModificar = await http.GetFromJsonAsync<HerramientaModificar>($"herramientas/{pId}");
         }
         else
         {
@@ -59,7 +59,7 @@
     {
         try
         {
-            var resultado = await http.PutAsJsonAsync($"herramienta/{pId}", herramientaModificar);
+            var resultado = await http.PutAsJsonAsync($"herramientas/{pId}", herramientaModificar);
 
             if (resultado.IsSuccessStatusCode)
             {
